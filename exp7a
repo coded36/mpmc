@@ -1,0 +1,18 @@
+#include <lpc21xx.h>
+#include <stdio.h>  // Needed for printf
+
+int main() {
+    int a = 6, b = 2, sum, sub, mul, div;
+    sum = a + b;
+    sub = a - b;
+    mul = a * b;
+    div = a / b;
+
+    // Output the results
+    printf("Sum = %d\n", sum);
+    printf("Sub = %d\n", sub);
+    printf("Mul = %d\n", mul);
+    printf("Div = %d\n", div);
+
+    while (1); // Loop forever
+}
