@@ -1,0 +1,61 @@
+.MODEL SMALL
+.DATA
+STR     DB "MODEL$"
+LEN     EQU $ - STR - 1
+RSTR    DB 10 DUP('$')
+MSG     DB 13,10,"Reverse string is: $"
+MSG1    DB 13,10,"String is Palindrome$"
+MSG2    DB 13,10,"String is Not Palindrome$"
+
+.CODE
+MAIN:
+    MOV AX,@DATA
+    MOV DS,AX
+    MOV ES,AX
+
+    LEA SI,STR
+    LEA DI,RSTR
+    ADD DI,LEN - 1
+
+    MOV CX,LEN
+REVERSE:
+    MOV AL,[SI]
+    MOV [DI],AL
+    INC SI
+    DEC DI
+    LOOP REVERSE
+
+    LEA DX,STR
+    MOV AH,09H
+    INT 21H
+
+    LEA DX,MSG
+    MOV AH,09H
+    INT 21H
+
+    LEA DX,RSTR
+    MOV AH,09H
+    INT 21H
+
+    LEA SI,STR
+    LEA DI,RSTR
+    MOV CX,LEN
+    CLD
+    REPE CMPSB
+
+    JNE NOTPAL
+
+    LEA DX,MSG1
+    MOV AH,09H
+    INT 21H
+    JMP EXIT
+
+NOTPAL:
+    LEA DX,MSG2
+    MOV AH,09H
+    INT 21H
+
+EXIT:
+    MOV AH,4CH
+    INT 21H
+END MAIN
