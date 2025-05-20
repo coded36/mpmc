@@ -1,24 +1,38 @@
-.MODEL SMALL
-.DATA
-ARR DW 0005H,0004H,0003H,0002H,0001H
-LEN DB ($-ARR)/2
-.CODE
-MOV AX,@DATA
-MOV DS,AX
-MOV CL,LEN
-DEC CL
-LOOP2: MOV SI, OFFSET ARR
-MOV BL,CL
-LOOP1: MOV AX,[SI]
-ADD SI,2
-CMP AX,[SI]
-JB NEXT
-MOV DX,[SI]
-MOV [SI],AX
-MOV [SI-2],DX
-NEXT: DEC BL
-JNZ LOOP1
-DEC CL
-JNZ LOOP2
-INT 3
-END
+.model small
+
+inits macro
+    mov ax,@data
+    mov ds,ax
+endm
+
+.data
+    array dw 20h,70h,40h,10h,50h
+    count dw ($-array)/2
+
+.code
+    inits
+
+    mov dx, count
+    dec dx
+
+outerloop:
+    mov cx, dx
+    lea si, array
+
+innerloop:
+    mov ax, [si]
+    cmp ax, [si+2]
+    jnl noswap
+
+    xchg [si+2], ax
+    mov [si], ax
+
+noswap:
+    add si, 02
+    loop innerloop
+    dec dx
+    jnz outerloop
+
+    int 3
+    align 16
+end
