@@ -1,38 +1,51 @@
-.model small
+.MODEL SMALL
+.STACK
+.DATA
+LIST DB 4,5,3,2,1
+N DW $-LIST
+ORDER EQU 0 ;implies ascending order
+MSG DB 'THE SORTED ARRAY IS:: $'
 
-inits macro
-    mov ax,@data
-    mov ds,ax
-endm
+.CODE
+MOV AX,@DATA
+MOV DS,AX
+MOV BX,N
+DEC BX
 
-.data
-    array dw 20h,70h,40h,10h,50h
-    count dw ($-array)/2
+NXTPASS:MOV CX,BX
+MOV SI,00H
 
-.code
-    inits
+NXTCOMP:MOV AL,LIST[SI]
+INC SI
+CMP AL,LIST[SI]
+IF ORDER EQ 0 ;ascending
+JB NEXT
+ELSE ;descending
+JA NEXT
+ENDIF
+XCHG AL,LIST[SI]
+MOV LIST[SI-1],AL
 
-    mov dx, count
-    dec dx
+NEXT:LOOP NXTCOMP
+DEC BX
+JNZ NXTPASS
+LEA DX,MSG
+MOV AH,09H
+INT 21H
+MOV BX,N
+MOV SI,00H
 
-outerloop:
-    mov cx, dx
-    lea si, array
-
-innerloop:
-    mov ax, [si]
-    cmp ax, [si+2]
-    jnl noswap
-
-    xchg [si+2], ax
-    mov [si], ax
-
-noswap:
-    add si, 02
-    loop innerloop
-    dec dx
-    jnz outerloop
-
-    int 3
-    align 16
-end
+AGAIN: MOV AL,LIST[SI]
+ADD AL,'0'
+MOV DL,AL
+MOV AH,02H
+INT 21H
+MOV AH,02H
+MOV DL,' '
+INT 21H
+INC SI
+DEC BX
+JNZ AGAIN
+MOV AH,4CH
+INT 21H
+END
