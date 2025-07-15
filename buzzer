@@ -1,0 +1,22 @@
+#include <LPC214x.h>
+
+void delay(unsigned int t) {
+    while(t--);
+}
+
+int main() {
+    IO1DIR |= (1 << 24); 
+
+    while(1) {
+        IO1SET = (1 << 24);  
+        delay(1000000);       
+
+        IO1CLR = (1 << 24);   
+        delay(1000000);      
+    }
+}
+
+
+
+
+
