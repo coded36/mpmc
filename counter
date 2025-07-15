@@ -1,0 +1,20 @@
+#include <LPC214x.h>
+
+void delay() {
+    unsigned int i, j;
+    for(i = 0; i < 1000; i++)         
+        for(j = 0; j < 3000; j++);    
+}
+
+int main() {
+    unsigned int num = 0;
+
+    IO1DIR = 0x00FF0000; 
+
+    while(1) {
+        IO1CLR = 0x00FF0000;           
+        IO1SET = (num << 16);         
+        delay();                       
+        num = (num + 1) & 0x0F;       
+    }
+}
