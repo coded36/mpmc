@@ -1,0 +1,27 @@
+#include <LPC214x.h>
+
+void delay(unsigned int count) {
+    volatile int i;
+    for (i = 0; i < count; i++);
+}
+
+int main() {
+    unsigned int patterns[] = {
+        0x604, 0x7E4, 0x648, 0x618,
+        0x730, 0x690, 0x680, 0x63C,
+        0x600, 0x630, 0x620, 0x780,
+        0x6C4, 0x708, 0x6C0, 0x6E0
+    };
+
+    int i;
+    IO0DIR |= 0x00000FFF;  
+
+    while (1) {
+        for (i = 0; i < 16; i++) {
+            IO0CLR = 0x00000FFF;
+            IO0SET = patterns[i];
+            delay(800000); 
+        }
+    }
+}
+
