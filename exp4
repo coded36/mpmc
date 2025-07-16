@@ -1,71 +1,80 @@
 .MODEL SMALL
-.STACK 100H
 
-.DATA
-N     DW 6
-R     DW 2
-NCR   DW 0
+.DATA 
+    N DW 6
+    R DW 2
+    NCR DW 0
+    MSG DB 'NCR = $'
+    RESULT DB 5 DUP(?)
 
 .CODE
-MAIN:
+START:
     MOV AX, @DATA
     MOV DS, AX
-
     MOV AX, N
     MOV BX, R
-
     CALL NCR_PROC
-    MOV NCR, AX
+
+    LEA DX, MSG
+    MOV AH, 09H
+    INT 21H
+
+    MOV AX, NCR
+    LEA SI, RESULT
+    CALL CONVERT_PRINT
 
     MOV AH, 4CH
     INT 21H
 
 NCR_PROC PROC
-    PUSH CX
-    PUSH DX
-    PUSH SI
-    PUSH DI
-
     CMP AX, BX
-    JE BASE1
+    JZ N1
     CMP BX, 0
-    JE BASE1
+    JZ N1
     CMP BX, 1
-    JE BASE2
+    JZ N2
     MOV CX, AX
     DEC CX
     CMP CX, BX
-    JE BASE2
-
+    JZ N2
     PUSH AX
     PUSH BX
-    DEC AX
+    DEC AX 
     CALL NCR_PROC
-    MOV SI, AX
-
-    POP BX
+    POP BX 
     POP AX
-
-    DEC AX
+    DEC AX 
     DEC BX
     CALL NCR_PROC
-    ADD AX, SI
+    JMP LAST
 
-    JMP ENDNCR
-
-BASE1:
-    MOV AX, 1
-    JMP ENDNCR
-
-BASE2:
-    JMP ENDNCR
-
-ENDNCR:
-    POP DI
-    POP SI
-    POP DX
-    POP CX
+N1: ADD NCR, 1
     RET
+N2: ADD NCR, AX
+LAST: RET
 NCR_PROC ENDP
 
-END MAIN
+CONVERT_PRINT PROC
+    MOV CX, 0
+    MOV BX, 10
+
+REPEAT_DIV:
+    XOR DX, DX
+    DIV BX
+    ADD DL, '0'
+    DEC SI
+    MOV [SI], DL
+    INC CX
+    CMP AX, 0
+    JNZ REPEAT_DIV
+
+    MOV AH, 02H
+PRINT_LOOP:
+    MOV DL, [SI]
+    INT 21H
+    INC SI
+    LOOP PRINT_LOOP
+    RET
+CONVERT_PRINT ENDP
+
+END START
